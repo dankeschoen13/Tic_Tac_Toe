@@ -1,8 +1,8 @@
 from art import board
 import numpy as np
 
-# full_board = np.full((5,5), 3)
-full_board = np.array([
+# full_board = np.full((7,7), 5)
+inner_board = np.array([
     [3, 3, 3, 3, 3],
     [4, 3, 4, 3, 4],
     [3, 3, 3, 3, 3],
@@ -13,9 +13,11 @@ full_board = np.array([
 class TicEngine:
 
     def __init__(self):
-        self.game_board = full_board
+        self.full_board = np.full((7, 7), 5)
+        self.inner_board = inner_board
+        self.playable_area = np.zeros((3, 3), dtype=int)
         self.turns_hist = set()
-        self.playable_area = np.zeros((3,3), dtype=int)
+
         self.winner = None
         self.active_player = None
         self.turn_cycle = 1
@@ -64,6 +66,7 @@ class TicEngine:
 
         row_complete = np.any(np.all((self.playable_area == self.playable_area[:, [0]]) & mask, axis=1))
         col_complete = np.any(np.all((self.playable_area == self.playable_area[[0], :]) & mask, axis=0))
+
         ld_complete = np.all((left_diag == left_diag[0]) & left_mask)
         rd_complete = np.all((right_diag == right_diag[0]) & right_mask)
 
@@ -77,9 +80,10 @@ class TicEngine:
     def render(self):
         for r in range(3):
             for c in range(3):
-                self.game_board[r*2, c*2] = self.playable_area[r, c]
-        tiles = {0: " ", 1: "X", 2: "O", 3: "|", 4:"="}
-        for row in self.game_board:
+                self.inner_board[r * 2, c * 2] = self.playable_area[r, c]
+        self.full_board[1:6, 1:6] = self.inner_board
+        tiles = {0: " ", 1: "X", 2: "O", 3: "|", 4:"—", 5:"#"}
+        for row in self.full_board:
             print(" ".join(tiles[num] for num in row))
 
 print("Let's play tic-tac-toe! Here's our board: ")
